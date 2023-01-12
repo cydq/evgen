@@ -16,7 +16,7 @@ dialgue {
     wait 20
     set 'x' 15
 
-    true f false
+    f false
 
     goto 2
   }

@@ -1,4 +1,6 @@
-use std::fs;
+use std::fs::{self, File};
+use std::path::Path;
+use std::io::{self, Write};
 
 use clap::{Parser as CLIParser};
 use pest::Parser;
@@ -15,7 +17,7 @@ struct Args {
 
     /// Output file
     #[arg(short, long)]
-    output: String,
+    output: Option<String>,
 }
 
 fn main() {
@@ -25,6 +27,14 @@ fn main() {
     let mut parsed = EV1Parser::parse(Rule::document, &input_file).expect("could not parse file");
     let structured = Document::from_pair(parsed.next().unwrap()).expect("could not parse contents");
     let serialized = serde_json::to_string(&structured).expect("could not serialize data");
-    
-    fs::write(args.output, serialized).expect("could not write to file");
+
+    let mut out_writer = match args.output {
+        Some(x) => {
+            let path = Path::new(&x);
+            Box::new(File::create(&path).unwrap()) as Box<dyn Write>
+        }
+        None => Box::new(io::stdout()) as Box<dyn Write>,
+    };
+
+    writeln!(out_writer, "{}", serialized).expect("could not write to file");
 }
