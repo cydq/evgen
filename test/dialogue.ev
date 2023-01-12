@@ -1,0 +1,29 @@
+# Metadata
+version 1
+name 'test dialogue'
+
+# Participants
+primary_participant 'You'
+
+participants [
+  'Andy the Frog'
+]
+
+# Dialogue
+dialgue {
+  branch 1 {
+    say 'hello'
+    wait 20
+    set 'x' 15
+
+    true f false
+
+    goto 2
+  }
+
+  branch 2 {
+    say 'you made it to step 2!'
+
+    end
+  }
+}

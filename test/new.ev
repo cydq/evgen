@@ -1,0 +1,21 @@
+hello "342" -342.2342e99
+
+list [
+  "adsf",
+  'asdf',
+  goto 3
+]
+
+# @region
+dfsf {
+  dfsdf {
+
+  }
+
+  hey @{
+    name: 3234,
+    answer: 'asdfa'
+  }
+  sdfsdf
+}
+# @endregion

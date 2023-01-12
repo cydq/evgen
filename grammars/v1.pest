@@ -1,0 +1,93 @@
+// Document
+document =
+{ SOI
+~ NEWLINE*
+~ (statement ~ NEWLINE+)*
+~ statement?
+~ EOI
+}
+
+// Statment
+statement = $
+{ identifier
+~ (WHITESPACE+ ~ literal)*
+~ (WHITESPACE+ ~ (collection | block))?
+}
+
+block = !{ "{" ~ NEWLINE* ~ block_inner? ~ NEWLINE* ~ "}" }
+block_inner = _
+{ NEWLINE*
+~ (statement ~ NEWLINE+)*
+~ statement?
+}
+
+// Expression
+literal = !
+{ boolean
+| number
+| string
+}
+
+collection = !
+{ array
+| map
+}
+
+value = !
+{ literal
+| collection
+}
+
+// Identifier
+identifier = @
+{ (ASCII_ALPHA | "_" | "$")
+~ (ASCII_ALPHANUMERIC | "_" | "$")*
+}
+
+// Literal Types
+boolean = ${ boolean_true | boolean_false }
+boolean_true = @{ "true" | "yes" | "on" }
+boolean_false = @{ "false" | "no" | "off" }
+
+number = $
+{ ("0x" ~ number_hex)
+| ("0b" ~ number_bin)
+| numer_decimal
+}
+number_hex = @{ ASCII_HEX_DIGIT+ }
+number_bin = @{ ASCII_BIN_DIGIT+ }
+numer_decimal = @
+{ "-"?
+~ ("0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*)
+~ ("." ~ ASCII_DIGIT*)?
+~ (^"e" ~ ("+" | "-")? ~ ASCII_DIGIT+)?
+}
+
+string = ${ PUSH("'" | "\"") ~ string_inner ~ POP }
+string_inner = @{ char* }
+char =
+{ !(PEEK | "\\") ~ ANY
+| "\\" ~ ("\"" | "'" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
+| "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+}
+
+// Collections
+array = { "[" ~ NEWLINE* ~ array_inner? ~ NEWLINE* ~ "]" }
+array_inner = _
+{ value ~ NEWLINE*
+~ ("," ~ NEWLINE* ~ value)* ~ NEWLINE*
+~ ","?
+}
+
+map = { "@{" ~ NEWLINE* ~ map_inner? ~ NEWLINE* ~ "}" }
+map_key = { identifier | string }
+map_pair = { map_key ~ ":" ~ value }
+map_inner = _
+{ map_pair ~ NEWLINE*
+~ ("," ~ NEWLINE* ~ map_pair)* ~ NEWLINE*
+~ ","?
+}
+
+// Whitespace
+WHITESPACE = _{ " " | "\t" }
+COMMENT = _{ "#" ~ (!NEWLINE ~ ANY)* }
