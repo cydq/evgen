@@ -102,7 +102,7 @@ impl Value {
                     }
 
                     let mut inner = pair.into_inner();
-                    let key_pair = inner.next()?;
+                    let key_pair = inner.next()?.into_inner().next()?;
                     let value_pair = inner.next()?;
 
                     let key = match key_pair.as_rule() {
@@ -111,7 +111,7 @@ impl Value {
                             _ => return None,
                         },
                         Rule::identifier => key_pair.as_str().to_string(),
-                        _ => continue,
+                        _ => return None,
                     };
 
                     values.insert(key, Value::from_pair(value_pair)?);

@@ -5,9 +5,9 @@ name 'test dialogue'
 # Participants
 primary_participant 'You'
 
-participants [
-  'Andy the Frog'
-]
+participants @{
+  q: 'Andy the Frog'
+}
 
 # Dialogue
 dialgue {
